@@ -78,6 +78,7 @@
         let timer = 0;
         let timerInterval;
 
+        // Ensure the images array has enough unique images for the maximum grid size (8x8 = 64 / 2 = 32 pairs).
         const images = [
             'images/1.png', 'images/2.png',
             'images/3.png', 'images/4.png',
@@ -85,6 +86,16 @@
             'images/7.png', 'images/8.png',
             'images/9.png', 'images/10.png',
             'images/11.jpg', 'images/12.png',
+            'images/1.png', 'images/2.png',
+            'images/3.png', 'images/4.png',
+            'images/5.png', 'images/6.png',
+            'images/7.png', 'images/8.png',
+            'images/9.png', 'images/10.png',
+            'images/11.jpg', 'images/12.png',
+            'images/1.png', 'images/2.png',
+            'images/3.png', 'images/4.png',
+            'images/5.png', 'images/6.png',
+            'images/7.png', 'images/8.png',
         ];
 
         gridSizeSelect.addEventListener('change', (event) => {
