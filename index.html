@@ -5,13 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flipbox Memory Game</title>
     <style>
+        @font-face {
+            font-family: 'moul';
+            src: url(fonts/Khmer\ OS\ Moul.ttf);
+        }
+        @font-face {
+            font-family: 'battambang';
+            src: url(fonts/Battambang.ttf);
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'moul';
+            font-weight:lighter;
+            color:teal;
+            line-height: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 0;
+            text-align: center;
+        }
+        select{
+            width: 100px;
+            padding:10px 20px;
+            font-size: 16px;
+        }
+        button{
+            border:none;
+            padding:10px 20px;
+            background-color: gray;
+            font-family: 'moul';
+            color:yellow;
         }
         .container {
             display: grid;
@@ -28,11 +52,23 @@
             cursor: pointer;
             position: relative;
         }
+        .square span {
+            color: grey;
+            font-size: 18px;
+            display: block;
+            position: absolute;
+        }
+        h1{
+            font-size: 18px;
+        }
         .hidden img {
             display: none;
         }
         .revealed img {
             display: block;
+        }
+        .revealed span {
+            display: none;
         }
         img {
             max-width: 100%;
@@ -45,22 +81,25 @@
         #gridSize {
             margin-top: 20px;
         }
+     #score,#timer{
+        font-family: 'battambang';
+     }
     </style>
 </head>
 <body>
-    <h1>Flipbox Memory Game</h1>
+    <h1>ល្បែងការចងចាំដ៏ល្អ🧠🌿</h1>
     <div>
-        <label for="gridSize">Choose grid size: </label>
+        <label for="gridSize">ជ្រើសរើសចំនួនប្រអប់: </label>
         <select id="gridSize">
             <option value="4">4x4</option>
             <option value="6">6x6</option>
             <option value="8">8x8</option>
         </select>
-        <button id="startGame">Start Game</button>
+        <button id="startGame">ចាប់ផ្ដើមលេង</button>
     </div>
     <div id="gameBoard" class="container"></div>
-    <div id="score">Score: 0</div>
-    <div id="timer">Time: 0s</div>
+    <div id="score">ពិន្ទុ: 0</div>
+    <div id="timer">ថេរវេលា: 0វិនាទី</div>
 
     <script>
         const gameBoard = document.getElementById('gameBoard');
@@ -78,7 +117,6 @@
         let timer = 0;
         let timerInterval;
 
-        // Ensure the images array has enough unique images for the maximum grid size (8x8 = 64 / 2 = 32 pairs).
         const images = [
             'images/1.png', 'images/2.png',
             'images/3.png', 'images/4.png',
@@ -86,16 +124,16 @@
             'images/7.png', 'images/8.png',
             'images/9.png', 'images/10.png',
             'images/11.jpg', 'images/12.png',
-            'images/1.png', 'images/2.png',
-            'images/3.png', 'images/4.png',
-            'images/5.png', 'images/6.png',
-            'images/7.png', 'images/8.png',
-            'images/9.png', 'images/10.png',
-            'images/11.jpg', 'images/12.png',
-            'images/1.png', 'images/2.png',
-            'images/3.png', 'images/4.png',
-            'images/5.png', 'images/6.png',
-            'images/7.png', 'images/8.png',
+            'images/13.png', 'images/14.png',
+            'images/15.png', 'images/16.png',
+            'images/17.png', 'images/18.png',
+            'images/19.png', 'images/20.png',
+            'images/21.png', 'images/22.png',
+            'images/23.png', 'images/24.png',
+            'images/25.png', 'images/26.png',
+            'images/27.png', 'images/28.png',
+            'images/29.png', 'images/30.png',
+            'images/31.png', 'images/32.png',
         ];
 
         gridSizeSelect.addEventListener('change', (event) => {
@@ -107,8 +145,8 @@
             matchedPairs = 0;
             revealedCards = [];
             timer = 0;
-            scoreDisplay.textContent = 'Score: ' + score;
-            timerDisplay.textContent = 'Time: ' + timer + 's';
+            scoreDisplay.textContent = 'ពិន្ទុ: ' + score;
+            timerDisplay.textContent = 'ថេរវេលា: ' + timer + ' វិនាទី';
             clearInterval(timerInterval);
             generateBoard(gridSize);
             startTimer();
@@ -124,7 +162,7 @@
                 const card = document.createElement('div');
                 card.classList.add('square', 'hidden');
                 card.dataset.index = i;
-                card.innerHTML = `<img src="${cards[i]}" alt="image">`;
+                card.innerHTML = `<span>LangdyApps</span><img src="${cards[i]}" alt="image">`;
                 card.addEventListener('click', () => flipCard(card));
                 gameBoard.appendChild(card);
             }
@@ -182,7 +220,7 @@
         function startTimer() {
             timerInterval = setInterval(() => {
                 timer++;
-                timerDisplay.textContent = 'Time: ' + timer + 's';
+                timerDisplay.textContent = 'ថេរវេលា: ' + timer + '  វិនាទី';
             }, 1000);
         }
     </script>
