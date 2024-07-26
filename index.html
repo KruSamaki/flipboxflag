@@ -19,24 +19,27 @@
             margin-top: 20px;
         }
         .square {
-            width: 100px;
-            height: 100px;
             background-color: #ccc;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             position: relative;
+            padding-top: 100%; /* This creates a square ratio. */
+        }
+        .square img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .hidden img {
             display: none;
         }
         .revealed img {
             display: block;
-        }
-        img {
-            max-width: 100%;
-            max-height: 100%;
         }
         #score, #timer {
             margin-top: 20px;
@@ -54,7 +57,7 @@
         <select id="gridSize">
             <option value="4">4x4</option>
             <option value="6">6x6</option>
-            <option value="8">8×8</option>
+            <option value="8">8x8</option>
         </select>
         <button id="startGame">Start Game</button>
     </div>
@@ -79,12 +82,12 @@
         let timerInterval;
 
         const images = [
-            'images/1.png', 'images/7.png',
-            'images/2.png', 'images/8.png',
-            'images/3.png', 'images/9.png',
-            'images/4.png', 'images/10.png',
-            'images/5.png', 'images/11.jpg',
-            'images/6.png', 'images/12.png',
+            'images/1.png', 'images/2.png',
+            'images/3.png', 'images/4.png',
+            'images/5.png', 'images/6.png',
+            'images/7.png', 'images/8.png',
+            'images/9.png', 'images/10.png',
+            'images/11.jpg', 'images/12.png',
         ];
 
         gridSizeSelect.addEventListener('change', (event) => {
@@ -108,7 +111,7 @@
             gameBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
             totalPairs = (size * size) / 2;
-            cards = createShuffledCards(size);
+            cards = createShuffledCards(totalPairs);
             for (let i = 0; i < size * size; i++) {
                 const card = document.createElement('div');
                 card.classList.add('square', 'hidden');
@@ -119,10 +122,9 @@
             }
         }
 
-        function createShuffledCards(size) {
-            const totalCards = size * size;
+        function createShuffledCards(pairs) {
             let cardImages = [];
-            for (let i = 0; i < totalCards / 2; i++) {
+            for (let i = 0; i < pairs; i++) {
                 const img = images[i % images.length];
                 cardImages.push(img);
                 cardImages.push(img);
