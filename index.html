@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipbox Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .square {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .hidden img {
+            display: none;
+        }
+        .revealed img {
+            display: block;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        #score, #timer {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        #gridSize {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flipbox Memory Game</h1>
+    <div>
+        <label for="gridSize">Choose grid size: </label>
+        <select id="gridSize">
+            <option value="4">4x4</option>
+            <option value="6">6x6</option>
+            <option value="8">8×8</option>
+        </select>
+        <button id="startGame">Start Game</button>
+    </div>
+    <div id="gameBoard" class="container"></div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 0s</div>
+
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const gridSizeSelect = document.getElementById('gridSize');
+        const startGameButton = document.getElementById('startGame');
+
+        let gridSize = 4;
+        let score = 0;
+        let revealedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 0;
+        let cards = [];
+        let timer = 0;
+        let timerInterval;
+
+        const images = [
+            'images/1.png', 'images/7.png',
+            'images/2.png', 'images/8.png',
+            'images/3.png', 'images/9.png',
+            'images/4.png', 'images/10.png',
+            'images/5.png', 'images/11.jpg',
+            'images/6.png', 'images/12.png',
+        ];
+
+        gridSizeSelect.addEventListener('change', (event) => {
+            gridSize = parseInt(event.target.value);
+        });
+
+        startGameButton.addEventListener('click', () => {
+            score = 0;
+            matchedPairs = 0;
+            revealedCards = [];
+            timer = 0;
+            scoreDisplay.textContent = 'Score: ' + score;
+            timerDisplay.textContent = 'Time: ' + timer + 's';
+            clearInterval(timerInterval);
+            generateBoard(gridSize);
+            startTimer();
+        });
+
+        function generateBoard(size) {
+            gameBoard.innerHTML = '';
+            gameBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+            totalPairs = (size * size) / 2;
+            cards = createShuffledCards(size);
+            for (let i = 0; i < size * size; i++) {
+                const card = document.createElement('div');
+                card.classList.add('square', 'hidden');
+                card.dataset.index = i;
+                card.innerHTML = `<img src="${cards[i]}" alt="image">`;
+                card.addEventListener('click', () => flipCard(card));
+                gameBoard.appendChild(card);
+            }
+        }
+
+        function createShuffledCards(size) {
+            const totalCards = size * size;
+            let cardImages = [];
+            for (let i = 0; i < totalCards / 2; i++) {
+                const img = images[i % images.length];
+                cardImages.push(img);
+                cardImages.push(img);
+            }
+            return cardImages.sort(() => Math.random() - 0.5);
+        }
+
+        function flipCard(card) {
+            if (card.classList.contains('revealed') || revealedCards.length === 2) {
+                return;
+            }
+
+            card.classList.remove('hidden');
+            card.classList.add('revealed');
+            revealedCards.push(card);
+
+            if (revealedCards.length === 2) {
+                if (revealedCards[0].innerHTML === revealedCards[1].innerHTML) {
+                    score++;
+                    matchedPairs++;
+                    revealedCards = [];
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    if (matchedPairs === totalPairs) {
+                        clearInterval(timerInterval);
+                        setTimeout(() => {
+                            if (timer <= 60) {
+                                alert('You won! Great job! Time: ' + timer + ' seconds');
+                            } else if (timer <= 120) {
+                                alert('You won! Good effort! Time: ' + timer + ' seconds');
+                            } else {
+                                alert('You won! Keep practicing! Time: ' + timer + ' seconds');
+                            }
+                        }, 500);
+                    }
+                } else {
+                    setTimeout(() => {
+                        revealedCards[0].classList.remove('revealed');
+                        revealedCards[0].classList.add('hidden');
+                        revealedCards[1].classList.remove('revealed');
+                        revealedCards[1].classList.add('hidden');
+                        revealedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                timerDisplay.textContent = 'Time: ' + timer + 's';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
