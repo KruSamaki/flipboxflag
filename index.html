@@ -14,33 +14,40 @@
             src: url(fonts/Battambang.ttf);
         }
         body {
-            font-family: 'moul';
-            font-weight:lighter;
-            color:teal;
-            line-height: 12px;
+            font-family: 'moul', sans-serif;
+            font-weight: lighter;
+            color: teal;
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 0;
             text-align: center;
+            background-color: #f0f8ff;
         }
-        select{
+        select, button {
             width: 100px;
-            padding:10px 20px;
+            padding: 10px 20px;
             font-size: 16px;
+            margin: 5px;
+            border-radius: 5px;
         }
-        button{
-            border:none;
-            padding:10px 20px;
+        button {
+            border: none;
             background-color: gray;
-            font-family: 'moul';
-            color:yellow;
+            color: yellow;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkgray;
         }
         .container {
             display: grid;
             gap: 10px;
             margin-top: 20px;
+            overflow: auto;
+            max-width: 100%;
         }
         .square {
             width: 100px;
@@ -51,15 +58,19 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
+            transition: transform 0.2s ease;
+        }
+        .square:hover {
+            transform: scale(1.1);
         }
         .square span {
             color: grey;
             font-size: 18px;
-            display: block;
             position: absolute;
         }
-        h1{
-            font-size: 18px;
+        h1 {
+            font-size: 24px;
+            margin-top: 20px;
         }
         .hidden img {
             display: none;
@@ -77,13 +88,39 @@
         #score, #timer {
             margin-top: 20px;
             font-size: 24px;
+            font-family: 'battambang', sans-serif;
         }
         #gridSize {
             margin-top: 20px;
         }
-     #score,#timer{
-        font-family: 'battambang';
-     }
+        @media (max-width: 600px) {
+            .square {
+                width: 80px;
+                height: 80px;
+            }
+            .container {
+                gap: 5px;
+            }
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            border: 2px solid teal;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .popup input {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -99,7 +136,14 @@
     </div>
     <div id="gameBoard" class="container"></div>
     <div id="score">ពិន្ទុ: 0</div>
-    <div id="timer">ថេរវេលា: 0វិនាទី</div>
+    <div id="timer">ថេរវេលា: 0 វិនាទី</div>
+
+    <div id="popup" class="popup">
+        <h2>អបអរសាទរ!</h2>
+        <p id="finalScore"></p>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <button id="saveScore">Save Score</button>
+    </div>
 
     <script>
         const gameBoard = document.getElementById('gameBoard');
@@ -107,6 +151,10 @@
         const timerDisplay = document.getElementById('timer');
         const gridSizeSelect = document.getElementById('gridSize');
         const startGameButton = document.getElementById('startGame');
+        const popup = document.getElementById('popup');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const playerNameInput = document.getElementById('playerName');
+        const saveScoreButton = document.getElementById('saveScore');
 
         let gridSize = 4;
         let score = 0;
@@ -118,7 +166,7 @@
         let timerInterval;
 
         const images = [
-           'images/1.png', 'images/2.png',
+            'images/1.png', 'images/2.png',
             'images/3.png', 'images/4.png',
             'images/5.png', 'images/6.png',
             'images/7.png', 'images/8.png',
@@ -152,6 +200,18 @@
             startTimer();
         });
 
+        saveScoreButton.addEventListener('click', () => {
+            const playerName = playerNameInput.value;
+            if (playerName) {
+                const playerData = { name: playerName, score: score, time: timer };
+                localStorage.setItem('playerData', JSON.stringify(playerData));
+                alert(`Score saved! Player: ${playerName}, Score: ${score}, Time: ${timer} seconds`);
+                popup.style.display = 'none';
+            } else {
+                alert('Please enter your name.');
+            }
+        });
+
         function generateBoard(size) {
             gameBoard.innerHTML = '';
             gameBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
@@ -162,7 +222,7 @@
                 const card = document.createElement('div');
                 card.classList.add('square', 'hidden');
                 card.dataset.index = i;
-                card.innerHTML = `<span>LangdyApps</span><img src="${cards[i]}" alt="image">`;
+                card.innerHTML = `<span>Langdy<br>Apps</span><img src="${cards[i]}" alt="image">`;
                 card.addEventListener('click', () => flipCard(card));
                 gameBoard.appendChild(card);
             }
@@ -192,17 +252,16 @@
                     score++;
                     matchedPairs++;
                     revealedCards = [];
-                    scoreDisplay.textContent = `Score: ${score}`;
+                    scoreDisplay.textContent = `ពិន្ទុ: ${score}`;
                     if (matchedPairs === totalPairs) {
                         clearInterval(timerInterval);
                         setTimeout(() => {
-                            if (timer <= 60) {
-                                alert('You won! Great job! Time: ' + timer + ' seconds');
-                            } else if (timer <= 120) {
-                                alert('You won! Good effort! Time: ' + timer + ' seconds');
-                            } else {
-                                alert('You won! Keep practicing! Time: ' + timer + ' seconds');
+                            finalScoreDisplay.textContent = `ពិន្ទុ: ${score}, ថេរវេលា: ${timer} វិនាទី`;
+                            const playerData = JSON.parse(localStorage.getItem('playerData'));
+                            if (playerData) {
+                                finalScoreDisplay.textContent += `, Player: ${playerData.name}`;
                             }
+                            popup.style.display = 'flex';
                         }, 500);
                     }
                 } else {
@@ -220,7 +279,7 @@
         function startTimer() {
             timerInterval = setInterval(() => {
                 timer++;
-                timerDisplay.textContent = 'ថេរវេលា: ' + timer + '  វិនាទី';
+                timerDisplay.textContent = 'ថេរវេលា: ' + timer + ' វិនាទី';
             }, 1000);
         }
     </script>
